@@ -7,15 +7,15 @@ import { House } from "lucide-react";
 import { Search } from "lucide-react";
 import { SquarePlus } from "lucide-react";
 import { CircleUser } from "lucide-react";
-import { decodeFormState } from "next/dist/server/app-render/entry-base";
 
 const Page = () => {
-  const { user, token } = useUser();
+  const { user, token, setUser, setToken } = useUser();
   const { push } = useRouter();
 
   const [posts, setPosts] = useState([]);
 
   const fetchPosts = async () => {
+    if (!token) return;
     const response = await fetch("http://localhost:10000/userPost", {
       method: "GET",
       headers: {
@@ -29,11 +29,6 @@ const Page = () => {
       console.log("Failed to fetch ");
     }
   };
-  console.log("postshuu", posts);
-
-  useEffect(() => {
-    fetchPosts();
-  }, [user, push]);
 
   const generatePostImage = () => {
     push("/Ai-photo-generate");
@@ -47,7 +42,17 @@ const Page = () => {
     push("/profile");
   };
 
-  console.log("usershuuu", user);
+  useEffect(() => {
+    fetchPosts();
+  }, [user, push, token]);
+
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("token");
+    push("/login");
+  };
+
   return (
     <div>
       <div className="flex justify-center text-[20px]">{user?.username}</div>
@@ -59,6 +64,12 @@ const Page = () => {
               <div className="text-2xl font-semibold">{user?.username}</div>
               <button className="px-4 py-1 text-sm border border-gray-300 rounded">
                 Edit Profile
+              </button>
+              <button
+                onClick={logout}
+                className="h-8 w-16 text-sm border border-red-500 rounded "
+              >
+                logOut
               </button>
             </div>
             <div className="flex gap-6 text-sm">

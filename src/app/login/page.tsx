@@ -37,7 +37,6 @@ const Page = () => {
       setToken(token);
       const decodedToken: decoded = jwtDecode(token);
       setUser(decodedToken.data);
-      console.log(token);
     } else {
       console.error("Login failed");
     }

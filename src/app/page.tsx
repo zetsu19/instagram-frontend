@@ -9,13 +9,16 @@ import { CircleUser } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 import { Heart } from "lucide-react";
 import { Send } from "lucide-react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
-  const { user, token } = useUser();
+  const { user, token, setUser, setToken } = useUser();
   const { push } = useRouter();
   const [posts, setPosts] = useState([]);
 
   const fetchPosts = async () => {
+    if (!token) return;
     const response = await fetch("http://localhost:10000/allPost", {
       method: "GET",
       headers: {
@@ -35,7 +38,7 @@ const Home = () => {
       `http://localhost:10000/post/toggle-like/${postId}`,
       {
         method: "POST",
-        headers: { authorization: ` Bearer ${token}` },
+        headers: { authorization: `Bearer ${token}` },
       }
     );
     if (response.ok) {
@@ -47,7 +50,7 @@ const Home = () => {
   };
 
   const follow = async (followedUserid: string) => {
-    const reponse = await fetch(
+    const response = await fetch(
       `http://localhost:10000/follow-toggle/${followedUserid}`,
       {
         method: "POST",
@@ -57,7 +60,8 @@ const Home = () => {
         },
       }
     );
-    if (reponse.ok) {
+    if (response.ok) {
+      toast.success("success");
       console.log("succesfull");
       await fetchPosts();
     } else {
@@ -81,7 +85,10 @@ const Home = () => {
   const Mainprofile = () => {
     push("/profile");
   };
-  console.log("postuudshuuu", posts);
+
+  const comment = (postId: string) => {
+    push(`/comment?postId=${postId}`);
+  };
 
   return (
     <div>
@@ -132,7 +139,7 @@ const Home = () => {
                     <Heart />
                   )}
                 </div>
-                <div className="mt-1">
+                <div className="mt-1" onClick={() => comment(post._id)}>
                   <MessageCircle />
                 </div>
                 <Send className="mt-1" />
