@@ -39,6 +39,7 @@ const Page = () => {
 
       const response = await fetch(
         `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0`,
+        
         {
           method: "POST",
           headers: headers,
@@ -97,6 +98,9 @@ const Page = () => {
   };
   const Mainprofile = () => {
     push("/profile");
+  };
+  const search = () => {
+    push("/search");
   };
   return (
     <div>
@@ -158,7 +162,7 @@ const Page = () => {
       </div>
       <div className=" border bg-white w-screen fixed bottom-0 flex justify-between  px-10 py-2">
         <House onClick={homePage} />
-        <Search />
+        <Search onClick={search} />
         <SquarePlus onClick={generatePostImage} />
         <CircleUser onClick={Mainprofile} />
       </div>

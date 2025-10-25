@@ -8,12 +8,28 @@ import { Search } from "lucide-react";
 import { SquarePlus } from "lucide-react";
 import { CircleUser } from "lucide-react";
 
+export type User = {
+  _id: string;
+  username: string;
+  followers: string[];
+  following: string[];
+  images: string;
+};
+
+export type Post = {
+  _id: string;
+  images: string;
+  caption: string;
+  like: string[];
+  user: User;
+};
+
 const Page = () => {
   const { user, token, setUser, setToken } = useUser();
   const { push } = useRouter();
-
-  const [posts, setPosts] = useState([]);
-
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+  
   const fetchPosts = async () => {
     if (!token) return;
     const response = await fetch("http://localhost:10000/userPost", {
@@ -30,6 +46,14 @@ const Page = () => {
     }
   };
 
+  const fetchUser = async () => {
+    const res = await fetch(`http://localhost:10000/user-info/${user?._id}`, {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    setUserInfo(data);
+  };
+
   const generatePostImage = () => {
     push("/Ai-photo-generate");
   };
@@ -41,9 +65,12 @@ const Page = () => {
   const Mainprofile = () => {
     push("/profile");
   };
-
+  const search = () => {
+    push("/search");
+  };
   useEffect(() => {
     fetchPosts();
+    fetchUser();
   }, [user, push, token]);
 
   const logout = () => {
@@ -52,7 +79,9 @@ const Page = () => {
     localStorage.removeItem("token");
     push("/login");
   };
-
+  const userPosts = () => {
+    push("/userPostPhoto");
+  };
   return (
     <div>
       <div className="flex justify-center text-[20px]">{user?.username}</div>
@@ -61,8 +90,14 @@ const Page = () => {
         <div className="flex px-4 py-6 border-b border-gray-300 bg-white">
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-4">
+              <img
+                className="h-12 w-12  "
+                src={`https://media.istockphoto.com/id/2171382633/vector/user-profile-icon-anonymous-person-symbol-blank-avatar-graphic-vector-illustration.jpg?s=612x612&w=0&k=20&c=ZwOF6NfOR0zhYC44xOX06ryIPAUhDvAajrPsaZ6v1-w=`}
+              />
               <div className="text-2xl font-semibold">{user?.username}</div>
-              <button className="px-4 py-1 text-sm border border-gray-300 rounded">
+              <button
+                className="px-4 py-1 text-sm border border-gray-300 rounded"
+              >
                 Edit Profile
               </button>
               <button
@@ -77,11 +112,11 @@ const Page = () => {
                 <div className="font-bold">{posts.length}</div> posts
               </span>
               <span>
-                <div className="font-bold">{user?.followers.length}</div>
+                <div className="font-bold">{userInfo?.followers.length}</div>
                 followers
               </span>
               <span>
-                <div className="font-bold">{user?.following.length}</div>
+                <div className="font-bold">{userInfo?.following.length}</div>
                 following
               </span>
             </div>
@@ -91,14 +126,16 @@ const Page = () => {
         <div className="grid grid-cols-3 gap-1 mt-2">
           {posts.map((post, index) => (
             <div key={index} className="aspect-square overflow-hidden">
-              <img src={post.images} className="w-full h-full object-cover" />
+              <div onClick={userPosts}>
+                <img src={post.images} className="w-full h-full object-cover" />
+              </div>
             </div>
           ))}
         </div>
 
         <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 flex justify-around items-center py-2 z-50">
           <House onClick={homePage} className="w-6 h-6" />
-          <Search className="w-6 h-6" />
+          <Search className="w-6 h-6" onClick={search} />
           <SquarePlus onClick={generatePostImage} className="w-6 h-6" />
           <CircleUser onClick={Mainprofile} className="w-6 h-6" />
         </div>

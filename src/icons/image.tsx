@@ -1,4 +1,4 @@
-export const insta = () => {
+export const IG_LOGO = () => {
   return (
     <svg
       width="100"

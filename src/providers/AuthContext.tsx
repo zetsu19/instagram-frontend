@@ -13,28 +13,21 @@ import {
   useState,
 } from "react";
 
+export type User = {
+ _id: string;
+  username: string;
+  followers: string[];
+  following: string[]; 
+  images: string;
+  email: string;
+  
+};
+
 export type ContextType = {
   user: User | null;
-  setUser: Dispatch<SetStateAction<null | User>>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   token: string | null;
-  setToken: Dispatch<SetStateAction<null | User>>;
-};
-export type User = {
-  // _id: String;
-  // email: string;
-  // password: string;
-  // username: string;
-  // bio: string | null;
-  // profilePicture: string | null;
-  _id: string;
-  images: string;
-  caption: string;
-  like: string[]; // user ids
-  user: {
-    _id: string;
-    username: string;
-    followers: string[]; // user ids
-  };
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 export type AuthContext = {

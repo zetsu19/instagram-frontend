@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useUser, decoded } from "@/providers/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { INSTAGRAM } from "@/icons/ig-logo";
 
 const Page = () => {
   const { setUser, user, token, setToken } = useUser();
@@ -53,10 +54,10 @@ const Page = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 p-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm flex flex-col gap-6">
+        <div className="flex justify-center"><INSTAGRAM/></div>
         <h2 className="text-2xl font-semibold text-center mb-4 text-gray-800 italic">
-          Instagram
+          Instagram 
         </h2>
-
         <input
           type="email"
           name="email"
@@ -77,8 +78,7 @@ const Page = () => {
 
         <button
           onClick={login}
-          className="w-full h-10 rounded-md bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 text-white font-semibold shadow-md hover:brightness-110 transition focus:outline-none focus:ring-4 focus:ring-pink-300"
-        >
+          className="w-full h-10 rounded-md bg-blue-400">
           Log In
         </button>
 
@@ -88,7 +88,7 @@ const Page = () => {
         <div className="flex justify-center">
           <button
             onClick={signup}
-            className="w-20 h-10 rounded-md bg-gradient-to-r from-blue-500 via-red-500 to-yellow-green-400 text-white font-semibold shadow-md hover:brightness-110 transition focus:outline-none focus:ring-4 focus:ring-pink-300"
+            className="w-20 h-10 rounded-md bg-blue-400"
           >
             SignUp
           </button>

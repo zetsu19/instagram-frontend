@@ -10,12 +10,33 @@ import { MessageCircle } from "lucide-react";
 import { Heart } from "lucide-react";
 import { Send } from "lucide-react";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { IG_LOGO } from "@/icons/image";
+
+export type User = {
+  _id: string;
+  username: string;
+  followers: string[];
+};
+
+export type Post = {
+  _id: string;
+  images: string;
+  caption: string;
+  like: string[];
+  user: User;
+};
+
+export type ContextType = {
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  token: string | null;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+};
 
 const Home = () => {
   const { user, token, setUser, setToken } = useUser();
   const { push } = useRouter();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   const fetchPosts = async () => {
     if (!token) return;
@@ -85,38 +106,45 @@ const Home = () => {
   const Mainprofile = () => {
     push("/profile");
   };
-
+  const search = () => {
+    push("/search");
+  };
   const comment = (postId: string) => {
     push(`/comment?postId=${postId}`);
   };
-
+const clickedUserPost= (userId: string) => {
+  push(`/user-profile/${userId}`)
+}
+const refresh = ()=>{
+  window.location.reload()
+}
   return (
     <div>
-      <div className=" border h-15 w-full fixed font-black text-2xl bg-white ">
-        <div className="flex justify-center mt-2">Instagram</div>
+      <div className=" border h-13 w-full fixed  bg-white ">
+        <div className="flex justify-center mt-3 " onClick={refresh}><IG_LOGO /></div>
       </div>
       <div className="max-w-xl mx-auto bg-white border border-gray-300 rounded-md shadow-md ">
-        <div className="flex items-center justify-between px-4 py-3 border-b"></div>
         <div className="mb-10 mt-13">
           {posts.map((post, index) => (
-            <div key={index} className="border-b border-gray-300 bg-white">
-              <div className="flex px-4 py-3 gap-10">
-                <div className="flex items-center ">
-                  <span className="font-bold text-xl">
+            <div key={index} className="border-b border-gray-300 bg-white ">
+              <div className="flex px-4 py-3 gap-5">  
+                <div className="flex items-center " onClick={() => clickedUserPost(post.user._id)}>
+                  <img className="h-9 w-9  rounded-full " src={`https://media.istockphoto.com/id/2171382633/vector/user-profile-icon-anonymous-person-symbol-blank-avatar-graphic-vector-illustration.jpg?s=612x612&w=0&k=20&c=ZwOF6NfOR0zhYC44xOX06ryIPAUhDvAajrPsaZ6v1-w=`}/>
+                  <span className="font-bold text-xl ml-2">
                     {post.user.username}
                   </span>
                 </div>
                 <div>
                   {post.user.followers.includes(user!._id!) ? (
                     <button
-                      className="  h-8 w-18 text-sm border border-gray-300 rounded"
+                      className="  h-8 w-18 text-sm mt-1 border border-gray-300 rounded"
                       onClick={() => follow(post.user._id)}
                     >
                       Unfollow
                     </button>
                   ) : (
                     <button
-                      className="  h-8 w-16 text-sm border border-gray-300 rounded"
+                      className="  h-8 w-16 text-sm border mt-1 border-gray-300 rounded"
                       onClick={() => follow(post.user._id)}
                     >
                       Follow
@@ -159,7 +187,7 @@ const Home = () => {
       <div>
         <div className=" border bg-white w-screen fixed bottom-0 flex justify-between  px-10 py-2">
           <House onClick={homePage} />
-          <Search />
+          <Search onClick={search}/>
           <SquarePlus onClick={generatePostImage} />
           <CircleUser onClick={Mainprofile} />
         </div>
