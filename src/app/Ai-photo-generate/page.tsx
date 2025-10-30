@@ -2,17 +2,13 @@
 
 import { useUser } from "@/providers/AuthContext";
 import { upload } from "@vercel/blob/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { House } from "lucide-react";
-import { Search } from "lucide-react";
-import { SquarePlus } from "lucide-react";
-import { CircleUser } from "lucide-react";
+import { House, Search, SquarePlus, CircleUser } from "lucide-react";
 
 const Page = () => {
   const [prompt, setPrompt] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [images, setImages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { push } = useRouter();
@@ -29,7 +25,6 @@ const Page = () => {
   const generateImage = async () => {
     if (!prompt.trim()) return;
     setIsLoading(true);
-    setImageUrl("");
 
     try {
       const headers = {
@@ -39,15 +34,14 @@ const Page = () => {
 
       const response = await fetch(
         `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0`,
-        
         {
           method: "POST",
-          headers: headers,
+          headers,
           body: JSON.stringify({
             inputs: prompt,
             parameters: {
               negative_prompt: "blurry, bad quality, distorted",
-              num_inference: 100,
+              num_inference_steps: 100,
               guidance_scale: 7.5,
             },
           }),
@@ -59,49 +53,52 @@ const Page = () => {
       }
 
       const blob = await response.blob();
-
       const file = new File([blob], "generated.png", { type: "image/png" });
+
       const uploaded = await upload(file.name, file, {
         access: "public",
         handleUploadUrl: "/api/upload",
       });
-      setImageUrl(uploaded.url);
+
+      setImages((prev) => [...prev, uploaded.url]);
     } catch (err) {
+      console.error("Error generating image:", err);
+    } finally {
       setIsLoading(false);
     }
-    console.log(imageUrl);
   };
+
   const createPosts = async () => {
-    const response = await fetch("http://localhost:10000/createPost", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        caption: prompt,
-        images: [imageUrl],
-      }),
-    });
-    if (response.ok) {
-      console.log("success");
-      push("/");
-    } else {
-      console.log("loooser ahahhahah");
+    if (images.length === 0) return;
+    try {
+      const response = await fetch("http://localhost:10000/createPost", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          caption: prompt,
+          images,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("successfull");
+        push("/");
+      } else {
+        console.log(" Failed ");
+      }
+    } catch (err) {
+      console.error("ajilquen suga", err);
     }
   };
-  const generatePostImage = () => {
-    push("/Ai-photo-generate");
-  };
-  const homePage = () => {
-    push("/");
-  };
-  const Mainprofile = () => {
-    push("/profile");
-  };
-  const search = () => {
-    push("/search");
-  };
+
+  const generatePostImage = () => push("/Ai-photo-generate");
+  const homePage = () => push("/");
+  const mainProfile = () => push("/profile");
+  const search = () => push("/search");
+
   return (
     <div>
       <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-lg italic">
@@ -115,6 +112,7 @@ const Page = () => {
         >
           Describe your image:
         </label>
+
         <textarea
           id="prompt"
           value={prompt}
@@ -122,9 +120,9 @@ const Page = () => {
           rows={4}
           disabled={isLoading}
           className="w-full p-4 border border-gray-300 rounded-lg shadow-sm 
-               focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-               disabled:opacity-50 disabled:cursor-not-allowed 
-               transition resize-none"
+                     focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                     disabled:opacity-50 disabled:cursor-not-allowed 
+                     transition resize-none"
           placeholder="Example: A futuristic city skyline at sunset in cyberpunk style..."
         />
 
@@ -132,39 +130,46 @@ const Page = () => {
           onClick={generateImage}
           disabled={!prompt.trim() || isLoading}
           className={`mt-5 w-full py-3 px-4 rounded-lg font-semibold text-white text-lg shadow-md transition 
-      ${
-        isLoading
-          ? "bg-gradient-to-r  to-gray-500 cursor-not-allowed"
-          : "bg-gradient-to-r  via-purple-500"
-      }
-    `}
+            ${
+              isLoading
+                ? "bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:brightness-110"
+            }`}
         >
-          {isLoading ? " Generating..." : " Generate Image"}
+          {isLoading ? "Generating..." : "Generate Image"}
         </button>
-
-        {imageUrl && (
-          <div className="mt-8">
-            <img
-              src={imageUrl}
-              alt="Generated"
-              className="w-full h-auto rounded-lg shadow-xl border border-gray-200"
-            />
+        {images.length > 0 && (
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {images.map((url, index) => (
+              <div key={index} className="relative">
+                <img
+                  src={url}
+                  alt={`Generated ${index}`}
+                  className="w-full h-auto rounded-lg shadow-xl border border-gray-200"
+                />
+              </div>
+            ))}
           </div>
         )}
       </div>
-      <div className="flex justify-center mt-5 gap-10 ">
+
+      <div className="flex justify-center mt-5 gap-10">
         <button
           onClick={createPosts}
-          className="w-35 h-10 rounded-md bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 text-white font-semibold shadow-md hover:brightness-110 transition focus:outline-none focus:ring-4 focus:ring-pink-300"
+          disabled={images.length === 0}
+          className="w-35 h-10 rounded-md bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 
+                     text-white font-semibold shadow-md hover:brightness-110 transition 
+                     focus:outline-none focus:ring-4 focus:ring-pink-300 disabled:opacity-50 mb-20"
         >
           Create Post
         </button>
       </div>
-      <div className=" border bg-white w-screen fixed bottom-0 flex justify-between  px-10 py-2">
+
+      <div className="border bg-white w-screen fixed bottom-0 flex justify-between px-10 py-2">
         <House onClick={homePage} />
         <Search onClick={search} />
         <SquarePlus onClick={generatePostImage} />
-        <CircleUser onClick={Mainprofile} />
+        <CircleUser onClick={mainProfile} />
       </div>
     </div>
   );

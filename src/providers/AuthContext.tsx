@@ -14,6 +14,7 @@ import {
 } from "react";
 
 export type User = {
+  profilePicture: any;
  _id: string;
   username: string;
   followers: string[];

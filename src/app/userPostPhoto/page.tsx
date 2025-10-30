@@ -106,7 +106,7 @@ const Page = () => {
                   {post.user.username}
                 </span>
               </div>
-              <div></div>
+
             </div>
             <img
               src={post.images}
