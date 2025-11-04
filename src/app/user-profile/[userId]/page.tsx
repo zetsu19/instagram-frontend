@@ -19,7 +19,7 @@ export type Post = {
   user: string;
 };
 
-const ClickedUserPage = () => {
+const Page = () => {
   const { token } = useUser();
   const { push } = useRouter();
   const params = useParams();
@@ -69,6 +69,9 @@ const ClickedUserPage = () => {
   const profileMain = () => {
     push("/");
   };
+    const viewPost = (postId: string) => {
+    push(`/userPostPicture/${postId}`);
+  };
   return (
     <div>
       <div className="flex">
@@ -104,10 +107,9 @@ const ClickedUserPage = () => {
             </div>
           </div>
         </div>
-
         <div className="grid grid-cols-3 gap-1 mt-2">
           {userPosts.map((post) => (
-            <div key={post._id} className="aspect-square overflow-hidden">
+            <div key={post._id} className="aspect-square overflow-hidden" onClick={() => viewPost(post._id)}>
               <img
                 src={post.images[0]}
                 className="w-full h-full object-cover"
@@ -115,7 +117,6 @@ const ClickedUserPage = () => {
             </div>
           ))}
         </div>
-
         <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 flex justify-around items-center py-2 z-50">
           <House onClick={goHome} className="w-6 h-6" />
           <Search onClick={search} className="w-6 h-6" />
@@ -127,4 +128,4 @@ const ClickedUserPage = () => {
   );
 };
 
-export default ClickedUserPage;
+export default Page;

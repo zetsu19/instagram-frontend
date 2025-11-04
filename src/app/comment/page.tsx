@@ -26,6 +26,7 @@ type CommentType = {
   user: {
     _id: string;
     username: string;
+    profilePicture?: string;
   };
 };
 
@@ -36,10 +37,11 @@ type PostType = {
   user: {
     _id: string;
     username: string;
+    profilePicture?: string;
   };
 };
 
-const CommentPage = () => {
+const Page = () => {
   const { user, token } = useUser();
   const { push } = useRouter();
   const searchParams = useSearchParams();
@@ -48,43 +50,47 @@ const CommentPage = () => {
   const [post, setPost] = useState<PostType | null>(null);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [newComment, setNewComment] = useState("");
-  const [loading, setLoading] = useState(true);
 
+  const fetchPost = async () => {
+    if (!token || !postId) return;
+    try {
+      const res = await fetch(
+        `http://localhost:10000/get-single-post/${postId}`,
+        {
+          headers: { authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setPost(data);
+      } else {
+        toast.error("Failed to load post");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const fetchComments = async () => {
     if (!token || !postId) return;
     try {
       const response = await fetch(
         `http://localhost:10000/get-all-comment/${postId}`,
         {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
+          headers: { authorization: `Bearer ${token}` },
         }
       );
       if (response.ok) {
         const data = await response.json();
-        if (data.length > 0) {
-          setPost(data[0].post);
-        }
         setComments(data);
       } else {
-        console.error("Failed to fetch comments");
+        console.log("Failed to fetch comments");
       }
     } catch (err) {
-      console.error("Error fetching comments:", err);
-    } finally {
-      setLoading(false);
+      console.error(err);
     }
   };
-
   const handleCreateComment = async () => {
-    if (!newComment.trim()) {
-      toast.warning("Please write a comment before sending!");
-      return;
-    }
-
     if (!token || !postId) return;
-
     try {
       const response = await fetch("http://localhost:10000/create-comment", {
         method: "POST",
@@ -92,68 +98,51 @@ const CommentPage = () => {
           "Content-Type": "application/json",
           authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          postId,
-          comment: newComment,
-        }),
+        body: JSON.stringify({ postId, comment: newComment }),
       });
-
       if (response.ok) {
         setNewComment("");
-        await fetchComments();
+        fetchComments();
       } else {
         toast.error("Failed to post comment");
       }
     } catch (err) {
-      console.error("Error posting comment:", err);
+      console.error(err);
     }
   };
-
-  const back = () => push("/");
-  const generatePostImage = () => push("/Ai-photo-generate");
-  const homePage = () => push("/");
-  const mainProfile = () => push("/profile");
-  const search = () => push("/search");
-
   useEffect(() => {
     if (!user) {
       push("/login");
       return;
     }
+    fetchPost();
     fetchComments();
   }, [user, token, postId]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen text-gray-500">
-        Loading comments...
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
-
       <div className="border-b h-13 w-full fixed flex bg-white z-50 px-5 py-3 items-center gap-4">
-        <CircleArrowLeft onClick={back} className="cursor-pointer" />
+        <CircleArrowLeft onClick={() => push("/")} className="cursor-pointer" />
         <div className="font-black text-xl">Comments</div>
       </div>
 
-
-      <div className="max-w-xl mx-auto pt-20 bg-white border rounded-md p-4">
+      <div className="max-w-xl mx-auto pt-20 bg-white border rounded-md p-4 mb-20">
         {post ? (
           <>
             <div className="mb-4 border-b pb-3">
               <div className="flex items-center gap-2">
+                  <img
+                    src="https://media.istockphoto.com/id/2171382633/vector/user-profile-icon-anonymous-person-symbol-blank-avatar-graphic-vector-illustration.jpg?s=612x612&w=0&k=20&c=ZwOF6NfOR0zhYC44xOX06ryIPAUhDvAajrPsaZ6v1-w="
+                    alt="profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
                 <span className="font-bold">{post.user.username}</span>
               </div>
               <div className="mt-2 text-gray-700">{post.caption}</div>
-
-              {post.images && post.images.length > 0 && (
+              {post.images?.length > 0 && (
                 <Carousel className="mt-3 w-full max-w-md">
                   <CarouselContent>
-                    {post.images.map((img, idx) => (
-                      <CarouselItem key={idx}>
+                    {post.images.map((img, index) => (
+                      <CarouselItem key={index}>
                         <img
                           src={img}
                           alt="post image"
@@ -163,24 +152,29 @@ const CommentPage = () => {
                     ))}
                   </CarouselContent>
                   <CarouselPrevious />
-                  <CarouselNext />
                 </Carousel>
               )}
             </div>
-
             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
               {comments.length === 0 ? (
                 <div className="text-gray-500 text-center py-3">
-                  No comments yet. Be the first!
+                  No comments yet
                 </div>
               ) : (
-                comments.map((c, index) => (
+                comments.map((c) => (
                   <div
-                    key={index}
+                    key={c._id}
                     className="flex items-start gap-3 bg-gray-50 rounded-md p-2"
                   >
-                    <div className="font-bold">{c.user.username}</div>
-                    <div className="text-gray-800">{c.comment}</div>
+                      <img
+                        src="https://media.istockphoto.com/id/2171382633/vector/user-profile-icon-anonymous-person-symbol-blank-avatar-graphic-vector-illustration.jpg?s=612x612&w=0&k=20&c=ZwOF6NfOR0zhYC44xOX06ryIPAUhDvAajrPsaZ6v1-w="
+                        alt="profile"
+                        className="w-7 h-7 rounded-full object-cover"
+                      />
+                    <div>
+                      <div className="font-bold text-sm">{c.user.username}</div>
+                      <div className="text-gray-800 text-sm">{c.comment}</div>
+                    </div>
                   </div>
                 ))
               )}
@@ -202,20 +196,23 @@ const CommentPage = () => {
             </div>
           </>
         ) : (
-          <div className="text-center text-gray-500">Post not found.</div>
+          <div className="text-center text-gray-500">Post not found</div>
         )}
       </div>
-
       <div className="border-t bg-white w-screen fixed bottom-0 flex justify-between px-10 py-2">
-        <House onClick={homePage} className="cursor-pointer" />
-        <Search onClick={search} className="cursor-pointer" />
-        <SquarePlus onClick={generatePostImage} className="cursor-pointer" />
-        <CircleUser onClick={mainProfile} className="cursor-pointer" />
+        <House onClick={() => push("/")} className="cursor-pointer" />
+        <Search onClick={() => push("/search")} className="cursor-pointer" />
+        <SquarePlus
+          onClick={() => push("/Ai-photo-generate")}
+          className="cursor-pointer"
+        />
+        <CircleUser
+          onClick={() => push("/profile")}
+          className="cursor-pointer"
+        />
       </div>
     </div>
   );
 };
 
-
-
-export default CommentPage;
+export default Page;

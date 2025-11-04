@@ -29,7 +29,7 @@ const Page = () => {
   const { push } = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [userInfo, setUserInfo] = useState<User | null>(null);
-  
+
   const fetchPosts = async () => {
     if (!token) return;
     const response = await fetch("http://localhost:10000/userPost", {
@@ -82,6 +82,9 @@ const Page = () => {
   const userPosts = () => {
     push("/userPostPhoto");
   };
+  const edit = () => {
+    push("/edit")
+  }
   return (
     <div>
       <div className="flex justify-center text-[20px]">{user?.username}</div>
@@ -94,10 +97,9 @@ const Page = () => {
                 className="h-12 w-12  "
                 src={`https://media.istockphoto.com/id/2171382633/vector/user-profile-icon-anonymous-person-symbol-blank-avatar-graphic-vector-illustration.jpg?s=612x612&w=0&k=20&c=ZwOF6NfOR0zhYC44xOX06ryIPAUhDvAajrPsaZ6v1-w=`}
               />
-              <div className="text-2xl font-semibold">{user?.username}</div>
-              <button
-                className="px-4 py-1 text-sm border border-gray-300 rounded"
-              >
+              <div className="text-2xl font-semibold">{userInfo?.username}</div>
+              <button className="px-4 py-1 text-sm border border-gray-300 rounded"
+              onClick={edit}>
                 Edit Profile
               </button>
               <button
@@ -127,12 +129,16 @@ const Page = () => {
           {posts.map((post, index) => (
             <div key={index} className="aspect-square overflow-hidden">
               <div onClick={userPosts}>
-                <img src={post.images} className="w-full h-full object-cover" />
+                <img
+                  src={
+                    Array.isArray(post.images) ? post.images[0] : post.images
+                  }
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           ))}
         </div>
-
         <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 flex justify-around items-center py-2 z-50">
           <House onClick={homePage} className="w-6 h-6" />
           <Search className="w-6 h-6" onClick={search} />

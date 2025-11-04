@@ -26,14 +26,13 @@ const Page = () => {
     if (!prompt.trim()) return;
     setIsLoading(true);
 
-    try {
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${API_KEY}`,
       };
 
       const response = await fetch(
-        `https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0`,
+        "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0",
         {
           method: "POST",
           headers,
@@ -47,25 +46,15 @@ const Page = () => {
           }),
         }
       );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error("Failed to generate");
       const blob = await response.blob();
       const file = new File([blob], "generated.png", { type: "image/png" });
-
       const uploaded = await upload(file.name, file, {
         access: "public",
         handleUploadUrl: "/api/upload",
       });
 
       setImages((prev) => [...prev, uploaded.url]);
-    } catch (err) {
-      console.error("Error generating image:", err);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const createPosts = async () => {
@@ -85,7 +74,7 @@ const Page = () => {
 
       if (response.ok) {
         console.log("successfull");
-        push("/");
+        push("/")
       } else {
         console.log(" Failed ");
       }
@@ -98,7 +87,6 @@ const Page = () => {
   const homePage = () => push("/");
   const mainProfile = () => push("/profile");
   const search = () => push("/search");
-
   return (
     <div>
       <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-lg italic">
@@ -118,7 +106,6 @@ const Page = () => {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           rows={4}
-          disabled={isLoading}
           className="w-full p-4 border border-gray-300 rounded-lg shadow-sm 
                      focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                      disabled:opacity-50 disabled:cursor-not-allowed 
@@ -128,15 +115,10 @@ const Page = () => {
 
         <button
           onClick={generateImage}
-          disabled={!prompt.trim() || isLoading}
-          className={`mt-5 w-full py-3 px-4 rounded-lg font-semibold text-white text-lg shadow-md transition 
-            ${
-              isLoading
-                ? "bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:brightness-110"
-            }`}
+          disabled={!prompt}
+          className={`mt-5 w-full py-3 px-4 rounded-lg font-semibold text-white text-lg shadow-md transition bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:brightness-110`}
         >
-          {isLoading ? "Generating..." : "Generate Image"}
+          Generate Image
         </button>
         {images.length > 0 && (
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">

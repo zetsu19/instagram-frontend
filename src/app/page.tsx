@@ -37,7 +37,7 @@ export type Post = {
   user: User;
 };
 
-const Home = () => {
+const Page = () => {
   const { user, token } = useUser();
   const { push } = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -100,7 +100,6 @@ const Home = () => {
       if (response.ok) {
         toast.success("Success");
         await fetchPosts();
-        refresh();
       } else {
         toast.error("Failed");
       }
@@ -252,4 +251,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Page;
