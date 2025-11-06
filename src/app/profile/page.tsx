@@ -79,12 +79,12 @@ const Page = () => {
     localStorage.removeItem("token");
     push("/login");
   };
-  const userPosts = () => {
-    push("/userPostPhoto");
-  };
   const edit = () => {
     push("/edit")
   }
+  const viewPost = (postId: string) => {
+    push(`/userPostPicture/${postId}`);
+  };
   return (
     <div>
       <div className="flex justify-center text-[20px]">{user?.username}</div>
@@ -128,7 +128,7 @@ const Page = () => {
         <div className="grid grid-cols-3 gap-1 mt-2">
           {posts.map((post, index) => (
             <div key={index} className="aspect-square overflow-hidden">
-              <div onClick={userPosts}>
+              <div onClick={() => viewPost(post._id)}>
                 <img
                   src={
                     Array.isArray(post.images) ? post.images[0] : post.images
