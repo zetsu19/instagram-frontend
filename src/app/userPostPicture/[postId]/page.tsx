@@ -27,7 +27,7 @@ const Page = () => {
 
   const fetchPost = async () => {
     try {
-      const res = await fetch(`http://localhost:10000/getPostById/${postId}`, {
+      const res = await fetch(`https://zetsu-h2dp.onrender.com/getPostById/${postId}`, {
         headers: { authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -43,7 +43,7 @@ const Page = () => {
   const postLike = async (postId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:10000/post/toggle-like/${postId}`,
+        `https://zetsu-h2dp.onrender.com/post/toggle-like/${postId}`,
         {
           method: "POST",
           headers: { authorization: `Bearer ${token}` },

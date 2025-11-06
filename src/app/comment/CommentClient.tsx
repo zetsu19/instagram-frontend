@@ -54,7 +54,7 @@ export default function CommentClient() {
     if (!token || !postId) return;
     try {
       const res = await fetch(
-        `http://localhost:10000/get-single-post/${postId}`,
+        `https://zetsu-h2dp.onrender.com/get-single-post/${postId}`,
         {
           headers: { authorization: `Bearer ${token}` },
         }
@@ -74,7 +74,7 @@ export default function CommentClient() {
     if (!token || !postId) return;
     try {
       const res = await fetch(
-        `http://localhost:10000/get-all-comment/${postId}`,
+        `https://zetsu-h2dp.onrender.com/get-all-comment/${postId}`,
         {
           headers: { authorization: `Bearer ${token}` },
         }
@@ -91,7 +91,7 @@ export default function CommentClient() {
   const handleCreateComment = async () => {
     if (!token || !postId) return;
     try {
-      const res = await fetch("http://localhost:10000/create-comment", {
+      const res = await fetch("https://zetsu-h2dp.onrender.com/create-comment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

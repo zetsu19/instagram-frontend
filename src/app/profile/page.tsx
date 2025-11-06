@@ -32,7 +32,7 @@ const Page = () => {
 
   const fetchPosts = async () => {
     if (!token) return;
-    const response = await fetch("http://localhost:10000/userPost", {
+    const response = await fetch("https://zetsu-h2dp.onrender.com/userPost", {
       method: "GET",
       headers: {
         authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const Page = () => {
   };
 
   const fetchUser = async () => {
-    const res = await fetch(`http://localhost:10000/user-info/${user?._id}`, {
+    const res = await fetch(`https://zetsu-h2dp.onrender.com/user-info/${user?._id}`, {
       headers: { authorization: `Bearer ${token}` },
     });
     const data = await res.json();

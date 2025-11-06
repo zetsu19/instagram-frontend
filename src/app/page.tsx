@@ -46,7 +46,7 @@ const Page = () => {
     if (!token) return;
 
     try {
-      const response = await fetch("http://localhost:10000/allPost", {
+      const response = await fetch("https://zetsu-h2dp.onrender.com/allPost", {
         method: "GET",
         headers: {
           authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ const Page = () => {
   const postLike = async (postId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:10000/post/toggle-like/${postId}`,
+        `https://zetsu-h2dp.onrender.com/post/toggle-like/${postId}`,
         {
           method: "POST",
           headers: { authorization: `Bearer ${token}` },
@@ -87,7 +87,7 @@ const Page = () => {
   const follow = async (followedUserid: string) => {
     try {
       const response = await fetch(
-        `http://localhost:10000/follow-toggle/${followedUserid}`,
+        `https://zetsu-h2dp.onrender.com/follow-toggle/${followedUserid}`,
         {
           method: "POST",
           headers: {
@@ -110,7 +110,7 @@ const Page = () => {
 
   const deletePost = async (postIdd: string) => {
     const response = await fetch(
-      `http://localhost:10000/deletePostUser/${postIdd}`,
+      `https://zetsu-h2dp.onrender.com/deletePostUser/${postIdd}`,
       {
         method: "DELETE",
         headers: {

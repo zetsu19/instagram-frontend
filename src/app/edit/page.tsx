@@ -12,7 +12,7 @@ const Page = () => {
   useEffect(() => {
     if (!user) return;
     const fetchUserInfo = async () => {
-      const res = await fetch(`http://localhost:10000/user-info/${user._id}`, {
+      const res = await fetch(`https://zetsu-h2dp.onrender.com/user-info/${user._id}`, {
         headers: { authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -24,7 +24,7 @@ const Page = () => {
   }, [user, token]);
 
   const handleSave = async () => {
-    const res = await fetch(`http://localhost:10000/editProfile/${user?._id}`, {
+    const res = await fetch(`https://zetsu-h2dp.onrender.com/editProfile/${user?._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

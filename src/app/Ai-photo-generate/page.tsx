@@ -60,7 +60,7 @@ const Page = () => {
   const createPosts = async () => {
     if (images.length === 0) return;
     try {
-      const response = await fetch("http://localhost:10000/createPost", {
+      const response = await fetch("https://zetsu-h2dp.onrender.com/createPost", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
