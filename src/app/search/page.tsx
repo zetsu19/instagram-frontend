@@ -13,7 +13,7 @@ const Page = () => {
 
   const fetchAllUsers = async () => {
     if (!token) return;
-      const res = await fetch("https://zetsu-h2dp.onrender.com/all-users", {
+      const res = await fetch("https://ig-backend-np0f.onrender.com/all-users", {
         headers: { authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -38,7 +38,7 @@ const Page = () => {
   const toggleFollow = async (followedUserId: string) => {
     if (!token) return;
     try {
-      await fetch(`https://zetsu-h2dp.onrender.com/follow-toggle/${followedUserId}`, {
+      await fetch(`https://ig-backend-np0f.onrender.com/follow-toggle/${followedUserId}`, {
         method: "POST",
         headers: { authorization: `Bearer ${token}` },
       });

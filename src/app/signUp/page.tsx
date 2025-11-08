@@ -14,7 +14,7 @@ const Page = () => {
   const [password, setPassword] = useState("");
 
   const signup = async () => {
-    const response = await fetch("https://zetsu-h2dp.onrender.com/signup", {
+    const response = await fetch("https://ig-backend-np0f.onrender.com/signup", {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify({ username, email, password }),

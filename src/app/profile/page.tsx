@@ -32,7 +32,7 @@ const Page = () => {
 
   const fetchPosts = async () => {
     if (!token) return;
-    const response = await fetch("https://zetsu-h2dp.onrender.com/userPost", {
+    const response = await fetch("https://ig-backend-np0f.onrender.com/userPost", {
       method: "GET",
       headers: {
         authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const Page = () => {
   };
 
   const fetchUser = async () => {
-    const res = await fetch(`https://zetsu-h2dp.onrender.com/user-info/${user?._id}`, {
+    const res = await fetch(`https://ig-backend-np0f.onrender.com/user-info/${user?._id}`, {
       headers: { authorization: `Bearer ${token}` },
     });
     const data = await res.json();

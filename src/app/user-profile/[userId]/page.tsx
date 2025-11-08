@@ -29,7 +29,7 @@ const Page = () => {
 
   const fetchUser = async () => {
     const res = await fetch(
-      `https://zetsu-h2dp.onrender.com/user-info/${params.userId}`,
+      `https://ig-backend-np0f.onrender.com/user-info/${params.userId}`,
       {
         headers: { authorization: `Bearer ${token}` },
       }
@@ -40,7 +40,7 @@ const Page = () => {
 
   const fetchPosts = async () => {
     const res = await fetch(
-      `https://zetsu-h2dp.onrender.com/clicked-user-post/${params.userId}`,
+      `https://ig-backend-np0f.onrender.com/clicked-user-post/${params.userId}`,
       {
         headers: { authorization: `Bearer ${token}` },
       }

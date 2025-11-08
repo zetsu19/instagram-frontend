@@ -24,7 +24,7 @@ const Page = () => {
   };
 
   const login = async () => {
-    const response = await fetch("https://zetsu-h2dp.onrender.com/login", {
+    const response = await fetch("https://ig-backend-np0f.onrender.com/login", {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify({
